@@ -1,0 +1,32 @@
+{
+  "name": "@cdlab996/app-monitor-nodejs",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Monitors app status on Google Play and the App Store, sending DingTalk notifications when an app is delisted.",
+  "author": "wudi",
+  "repository": {
+    "type": "http",
+    "url": "https://github.com/WuChenDi/app-monitor-nodejs.git"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.1",
+    "dotenv": "^16.5.0",
+    "hono": "^4.7.8",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "@cdlab996/eslint-config-ts": "0.0.13",
+    "@cdlab996/prettier-config": "0.0.13",
+    "@types/node": "^20.11.17",
+    "@types/node-cron": "^3.0.11",
+    "eslint": "8.57.0",
+    "prettier": "3.3.3",
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3"
+  }
+}
