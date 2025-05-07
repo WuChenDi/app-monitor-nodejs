@@ -1,15 +1,17 @@
 FROM node:22-alpine AS base
 
+RUN npm install -g pnpm
+
 FROM base AS builder
 
 RUN apk add --no-cache gcompat
 WORKDIR /app
 
-COPY package*json tsconfig.json src ./
+COPY package*json pnpm-lock.yaml tsconfig.json src ./
 
-RUN npm ci && \
-    npm run build && \
-    npm prune --production
+RUN pnpm install --frozen-lockfile && \
+    pnpm run build && \
+    pnpm prune --prod
 
 FROM base AS runner
 WORKDIR /app
