@@ -42,10 +42,6 @@ interface ItunesApiResponse {
 }
 
 const LOG_DIR = path.join(process.cwd(), 'logs')
-const LOG_FILE = path.join(
-  LOG_DIR,
-  `mgcloud-app-monitor-${new Date().toISOString().split('T')[0]}.log`
-)
 
 async function ensureLogDir() {
   try {
@@ -55,12 +51,20 @@ async function ensureLogDir() {
   }
 }
 
+function getCurrentLogFilePath() {
+  const currentDate = new Date().toISOString().split('T')[0]
+  return path.join(LOG_DIR, `mgcloud-app-monitor-${currentDate}.log`)
+}
+
 async function writeLog(message: string, level: 'info' | 'error' | 'warn' = 'info') {
   const timestamp = new Date().toISOString()
   const logMessage = `[${timestamp}] [${level.toUpperCase()}] ${message}\n`
+  const currentLogFile = getCurrentLogFilePath()
 
   try {
-    await fs.appendFile(LOG_FILE, logMessage)
+    await ensureLogDir()
+
+    await fs.appendFile(currentLogFile, logMessage)
     // eslint-disable-next-line no-console
     console.log(logMessage.trim()) // Output to the console simultaneously
   } catch (error) {
@@ -71,10 +75,6 @@ async function writeLog(message: string, level: 'info' | 'error' | 'warn' = 'inf
 // Initialize Hono app
 const app = new Hono()
 app.use('*', requestId())
-
-ensureLogDir().catch((error) => {
-  console.error('Failed to create log directory:', error)
-})
 
 // app.use('*', logger())
 app.use(
@@ -109,8 +109,9 @@ app.get('/check', async (c) => {
   try {
     await writeLog('Manual check triggered')
     const status = await checkApps()
+    const requestIdValue = c.get('requestId')
     await writeLog(
-      `[RequestID: ${requestId}] Check completed, status: ${JSON.stringify(status)}`
+      `[RequestID: ${requestIdValue}] Check completed, status: ${JSON.stringify(status)}`
     )
     return c.json(status)
   } catch (error) {
